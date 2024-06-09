@@ -14,7 +14,7 @@ from src.tgbot.middlewares import (
     RegisteredMiddleware,
 )
 from src.tgbot.handlers import (
-    main, test,
+    main, test, managers_handlers,
 )
 
 logger = logging.getLogger(__name__)
@@ -58,9 +58,12 @@ async def start_app(configfile):
     # -> Registerer Routers
     dp.include_router(main.router)
     dp.include_router(test.router)
+    dp.include_router(managers_handlers.router)
 
     # -> Start
     await bot.delete_webhook(drop_pending_updates=True)
+    # -> delete menu button
+    #await bot.delete_my_commands()
     await dp.start_polling(
         bot,
         allowed_updates=dp.resolve_used_update_types(),

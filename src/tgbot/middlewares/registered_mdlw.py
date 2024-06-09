@@ -8,7 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.engine import ScalarResult
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.tgbot.models import User
+from src.tgbot.models import Users
 from src.tgbot.services.data_access_object import DataAccessObject
 
 
@@ -25,9 +25,9 @@ class RegisteredMiddleware(BaseMiddleware):
         tg_user: user.User = data.get("event_from_user")
         dao: DataAccessObject = data["dao"]
 
-        if not await dao.get_object(User, tg_user.id):
+        if not await dao.get_object(Users, tg_user.id):
             await dao.add_object(
-                User(
+                Users(
                     id=tg_user.id,
                     fullname=tg_user.full_name,
                     username=tg_user.username,

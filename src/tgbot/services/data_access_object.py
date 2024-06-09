@@ -9,7 +9,8 @@ from sqlalchemy.exc import (
     NoResultFound,
 )
 
-from src.tgbot.models import User
+from src.tgbot.models import Users
+from src.tgbot.models.db_models import Roles
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +21,7 @@ class DataAccessObject:
 
     #  Get object from id
     async def get_object(
-        self, db_object: Union[User], db_object_id: int = None
+        self, db_object: Union[Users], db_object_id: int = None
     ) -> list:
         stmt = select(db_object)
         if db_object_id:
@@ -32,6 +33,6 @@ class DataAccessObject:
     #  Merge object
     async def add_object(
         self,
-        db_object: Union[User],
+        db_object: Union[Users],
     ) -> None:
         await self.session.merge(db_object)

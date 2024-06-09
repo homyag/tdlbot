@@ -11,7 +11,6 @@ from src.tgbot.config.config import Config, load_config
 from src.tgbot.database.connect import Base
 from src.tgbot.models.db_models import *
 
-
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config

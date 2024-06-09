@@ -1,5 +1,7 @@
-from .db_models import User
+from .db_models import (
+    Users,
+)
 
 __all__ = [
-    "User",
+    "Users",
 ]
