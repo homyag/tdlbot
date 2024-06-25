@@ -1,10 +1,14 @@
 import logging
 
 import asyncio
+import os
 
 from aiogram import Bot, Dispatcher, Router
 from aiogram.types import BotCommand
 from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram_dialog.setup import DialogRegistry
+
+from src.tgbot.handlers.managers_handlers import managers_new_task, managers_tasks
 
 from src.tgbot.config.config import Config, load_config
 from src.tgbot.database.connect import create_async_engine_db, \
@@ -12,10 +16,18 @@ from src.tgbot.database.connect import create_async_engine_db, \
 from src.tgbot.middlewares import (
     SessionMiddleware,
     RegisteredMiddleware,
+    AuthorizationMiddleware,
 )
 from src.tgbot.handlers import (
     main, test, managers_handlers,
 )
+from src.tgbot.middlewares.api_mdlw import ApiTokenMiddleware
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+API_TOKEN = os.environ.get('API_TOKEN')
 
 logger = logging.getLogger(__name__)
 
@@ -52,13 +64,17 @@ async def start_app(configfile):
     dp: Dispatcher = Dispatcher(storage=storage)
 
     # -> Middlewares
+    dp.update.middleware(AuthorizationMiddleware(bot))
+    dp.update.middleware(ApiTokenMiddleware(API_TOKEN))
     dp.update.middleware(SessionMiddleware(sessionmaker=db_session))
     dp.update.middleware(RegisteredMiddleware())
 
     # -> Registerer Routers
     dp.include_router(main.router)
     dp.include_router(test.router)
-    dp.include_router(managers_handlers.router)
+    # dp.include_router(managers_handlers.router)
+    dp.include_router(managers_new_task.router)
+    dp.include_router(managers_tasks.router)
 
     # -> Start
     await bot.delete_webhook(drop_pending_updates=True)
